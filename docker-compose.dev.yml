@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
+  server:
+    container_name: server
+    command: npm run dev:watch
+    restart: always
+    build:
+      context: "./server"
+      dockerfile: Dockerfile.dev
+    env_file: ./server/.env.dev
+    volumes:
+      - ./server/src:/app/src:Z
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+  frontend:
+    container_name: frontend
+    restart: always
+    build:
+      context: "./frontend"
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app:Z
+    ports:
+      - "80:5173"
+    depends_on:
+      - server
