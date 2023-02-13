@@ -1,16 +1,11 @@
 import mongoose from "mongoose"
 
 type DBInput = {
-  db?: string,
+  db: string,
 }
 
 export default ({ db }: DBInput) => {
   const connect = async () => {
-    if (db === undefined) {
-      console.error(`No database connection string provided.`)
-      process.exit(1)
-    }
-
     try {
       mongoose.set("strictQuery", true)
       const conn = await mongoose.connect(db)

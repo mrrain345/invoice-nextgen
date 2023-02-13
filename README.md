@@ -19,6 +19,7 @@ Only supported language is **Polish**.
 - TypeScript
 - Express
 - MongoDB (Mongoose)
+- Runtypes
 
 ## Production setup
 
