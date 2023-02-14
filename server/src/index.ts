@@ -1,36 +1,36 @@
 import express from 'express'
-import dotenv from 'dotenv'
-import bodyParser from 'body-parser'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import 'express-async-errors'
-import connect from './connect.js'
-import router from './router.js'
+import dbconnect from './dbconnect.js'
+import router from './routes/router.js'
 import errorHandler from './middlewares/error-handler.js'
 import { NotFoundError } from './errors.js'
-
-// Load environment variables from .env file
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: '.env.dev' })
-}
-
-if (!process.env.MONGODB_URI) {
-  console.error('MONGODB_URI environment variable is not set.')
-  process.exit(-1)
-}
+import { unauth } from './middlewares/auth.js'
 
 // Create Express server
 const app = express()
 
 // Express configuration
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' ? process.env.CORS_ALLOW_ORIGIN : '*',
+  credentials: true,
+}))
+app.use(unauth)
 
 // Connect to database
-connect({ db: process.env.MONGODB_URI })
+if (!process.env.MONGODB_URI) {
+  console.error('MONGODB_URI environment variable is not set.')
+  process.exit(-1)
+}
+
+dbconnect()
 
 // Routes
-app.use("/", router)
+app.use("/api", router)
 
 // Catch 404 Not Found
 app.all('*', (req, res) => {
@@ -41,7 +41,7 @@ app.all('*', (req, res) => {
 app.use(errorHandler)
 
 // Start Express server
-const port = process.env.PORT ?? 3000
+const port = process.env.PORT || 3000
 
 app.listen(port, () => {
   console.log(`API server is running at http://localhost:${port}`)

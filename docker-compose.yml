@@ -16,7 +16,9 @@ services:
     build:
       context: "./server"
       dockerfile: Dockerfile
-    env_file: ./server/.env
+    env_file:
+      - ./server/.env
+      - ./server/.env.local
     ports:
       - "3000:3000"
     depends_on:

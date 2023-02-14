@@ -20,6 +20,7 @@ Only supported language is **Polish**.
 - Express
 - MongoDB (Mongoose)
 - Runtypes
+- JWT
 
 ## Production setup
 

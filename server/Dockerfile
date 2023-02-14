@@ -2,21 +2,22 @@
 FROM node:alpine
 
 WORKDIR /app
+ENV NODE_ENV=production
 
 COPY package.json ./
-COPY tsconfig.json ./
 RUN npm install
 
-COPY src ./src
+COPY . .
 RUN npm run build
 
 ### Run the server ###
 FROM node:18-alpine
 
 WORKDIR /app
+ENV NODE_ENV=production
 
 COPY package.json ./
-RUN npm install --omit=dev
+RUN npm install
 RUN npm install -g pm2
 
 COPY --from=0 /app/dist ./

@@ -15,7 +15,9 @@ services:
     build:
       context: "./server"
       dockerfile: Dockerfile.dev
-    env_file: ./server/.env.dev
+    env_file:
+      - ./server/.env
+      - ./server/.env.local
     volumes:
       - ./server:/app:Z
     ports:

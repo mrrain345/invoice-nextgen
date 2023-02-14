@@ -1,21 +1,46 @@
-import mongoose, { Schema, Document } from "mongoose"
+import mongoose, { Schema } from "mongoose"
+import validator from "validator"
 
-export interface IUser extends Document {
+export interface IUser {
   email: string,
   username: string,
+  password?: string,
+  refreshTokens?: string[],
+  createdAt?: Date,
+  updatedAt?: Date,
 }
 
-const UserSchema: Schema = new Schema({
+const schema = new Schema<IUser>({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    validate: {
+      validator: (email: string) => {
+        return validator.isEmail(email)
+      }
+    }
   },
   username: {
     type: String,
     required: true,
-    unique: true
+    validate: {
+      validator: (username: string) => {
+        return username.length >= 3
+      }
+    }
   },
-})
+  password: {
+    type: String,
+    required: true,
+    select: false,
+  },
+  refreshTokens: {
+    type: [String],
+    required: true,
+    select: false,
+    default: [],
+  },
+}, { timestamps: true })
 
-export default mongoose.model<IUser>("User", UserSchema)
+export default mongoose.model<IUser>("User", schema)
